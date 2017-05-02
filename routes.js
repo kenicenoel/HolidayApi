@@ -6,7 +6,8 @@ var mongoose = require('mongoose');
 var Holiday = (require('./model/holiday'));
 
 // connect to the Mongo database using mongoose
-var db = mongoose.connect('mongodb://keninja:knj271990@ds062339.mlab.com:62339/holiday-api');
+// var db = mongoose.connect('mongodb://keninja:knj271990@ds062339.mlab.com:62339/holiday-api');
+var db = mongoose.connect('mongodb://chiefdev:h0lid@y@holiday-api-shard-00-00-y7vp7.mongodb.net:27017,holiday-api-shard-00-01-y7vp7.mongodb.net:27017,holiday-api-shard-00-02-y7vp7.mongodb.net:27017/holiday-api?ssl=true&replicaSet=holiday-api-shard-0&authSource=admin');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) 
