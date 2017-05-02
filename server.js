@@ -9,9 +9,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 //Get API Routes from routes file
 app.use(require('./routes')); 
 
-app.listen(5000, function()
+app.listen(3000, function()
 {
-	console.log("Holiday API running on port 5000.");
+	console.log("Holiday API running on port 3000.");
 });
-
 

@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var Holiday = (require('./model/holiday'));
 
 // connect to the Mongo database using mongoose
-var db = mongoose.connect('mongodb://localhost/holiday-api');
+var db = mongoose.connect('mongodb://keninja:knj271990@ds062339.mlab.com:62339/holiday-api');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) 
@@ -14,7 +14,6 @@ router.use(function timeLog(req, res, next)
   console.log('Time: ', Date.now());
   next();
 });
-
 
 
 
@@ -114,8 +113,8 @@ router.post('/holiday', function (request, response)
 /* ************************** PUT ****************************/
 
 // Handle update requests from the client for the id specified after the / in the url. 
-router.put('/holiday/:holidayId', function (request, response) {
-	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
+router.put('/holiday/:id', function (request, response) {
+	var holidayId = request.params.id; // grab the specified id from the url (:/id)
 	var newName = request.body.name;
 	var newDate = request.body.date;
 	var newCountry = request.body.country;
@@ -169,9 +168,9 @@ router.put('/holiday/:holidayId', function (request, response) {
 /**********************  DELETE *****************/
 
 // Handle delete requests from the client for the id specified after the / in the url. 
-router.delete('/holiday/:holidayId', function (request, response) 
+router.delete('/holiday/:id', function (request, response) 
 {
-	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
+	var holidayId = request.params.id; // grab the specified id from the url (/:id)
 	Holiday.findByIdAndRemove(holidayId, function (err, holiday) 
 	{  
 		// We'll create a simple object to send back with a message and the id of the document that was removed
