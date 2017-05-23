@@ -1,12 +1,17 @@
+
 var express = require('express');
-var router = express.Router();
-
 var mongoose = require('mongoose');
+var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var router = express.Router();
+var config = require('./config'); // get our config file
 
-var Holiday = (require('./model/holiday'));
+
+var Holiday = (require('./models/holiday')); //get our holiday model
+var User   = require('./models/user'); // get our mongoose model
 
 // connect to the Mongo database using mongoose
-var db = mongoose.connect('mongodb://localhost/holiday-api');
+var db = mongoose.connect(config.database);
+
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) 
@@ -21,11 +26,13 @@ router.use(function timeLog(req, res, next)
 // handle Get requests from clients
 router.get('/', function (request, response) 
 {
-	response.send("Welcome to our Holiday API.");
+	response.send("Welcome to the Caribbean Holidays API.\nVersion: v1\nAccess: /api/v1/holiday/");
 });
 
+
+
 // A list of holidays for all countries
-router.get('/holiday', function (request, response) 
+router.get('/api/v1/holiday', function (request, response) 
 {
 	Holiday.find({}, function(err, holidays)
 	{
@@ -49,7 +56,7 @@ router.get('/holiday', function (request, response)
 });
 
 // A list of holidays for specific country
-router.get('/holiday/:country', function (request, response) 
+router.get('/api/v1/holiday/:country', function (request, response) 
 {
 	var filterCountry = request.params.country;
 	Holiday.find({'country': filterCountry}, function(err, holidays)
@@ -77,7 +84,104 @@ router.get('/holiday/:country', function (request, response)
 /***************************************** POST ******************************** */
 // Handle post requests from clients
 
-router.post('/holiday', function (request, response) 
+// Authentication
+router.post('/api/v1/authenticate', function(request, response)
+{
+	// find the user
+  User.findOne
+  ({name: request.body.name}, function(err, user) 
+  {
+    if (err)
+	{
+		response.status(500).send({error: "Something went wrong. Error: "+err});
+	} 
+
+    if (!user) 
+	{
+      response.send({ success: false, message: 'Authentication failed. User not found.' });
+    } 
+	else if (user) 
+	{
+      // check if password matches
+      if (user.password != request.body.password) 
+	  {
+        response.send({ success: false, message: 'Authentication failed. Wrong password.' });
+      } 
+	  else 
+	  {
+
+        // if user is found and password is right
+        // create a token
+        var token = jwt.sign(user, app.get('superSecret'), 
+		{
+          expiresInMinutes: 7200 // expires in 120 hours or 5 days
+        });
+
+        // return the information including token as JSON
+        response.send({
+          success: true,
+          message: 'Enjoy your token!',
+          token: token
+        });
+      }   
+
+    }
+
+  });
+
+    
+});
+
+
+/////////// ANY ROUTE DEFINED AFTER THIS SECTION WILL REQUIRE TOKEN AUTHENTICATION FOR ACCESS TO THESE ROUTES ///////
+
+	// route middleware to verify a token
+router.use(function(request, response, next) 
+{
+
+  // check header or url parameters or post parameters for token
+  var token = request.body.token || request.query.token || request.headers['x-access-token'];
+
+  // decode token
+  if (token) 
+  {
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('superSecret'), function(err, decoded) 
+	{      
+      if (err) 
+	  {
+        return response.json({ success: false, message: 'Failed to authenticate token.' });    
+      } 
+	  else 
+	  {
+        // if everything is good, save to request for use in other routes
+        request.decoded = decoded;    
+        next();
+      }
+    });
+
+  } 
+  else 
+  {
+
+    // if there is no token
+    // return an error
+    return res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
+
+  }
+});
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+router.post('/api/v1/holiday', function (request, response) 
 {
 	
 
@@ -114,7 +218,7 @@ router.post('/holiday', function (request, response)
 /* ************************** PUT ****************************/
 
 // Handle update requests from the client for the id specified after the / in the url. 
-router.put('/holiday/:holidayId', function (request, response) {
+router.put('/api/v1/holiday/:holidayId', function (request, response) {
 	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
 	var newName = request.body.name;
 	var newDate = request.body.date;
@@ -169,7 +273,7 @@ router.put('/holiday/:holidayId', function (request, response) {
 /**********************  DELETE *****************/
 
 // Handle delete requests from the client for the id specified after the / in the url. 
-router.delete('/holiday/:holidayId', function (request, response) 
+router.delete('/api/v1/holiday/:holidayId', function (request, response) 
 {
 	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
 	Holiday.findByIdAndRemove(holidayId, function (err, holiday) 
