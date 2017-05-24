@@ -85,6 +85,54 @@ router.get('/api/v1/holiday/:country', function (request, response)
 /***************************************** POST ******************************** */
 // Handle post requests from clients
 
+
+// Create a user
+router.post('/api/v1/setup', function(request, response)
+{
+	var email = request.body.email;
+	var password = request.body.password;
+	var fullName = request.body.fullName;
+
+	// find the user
+  User.findOne
+  ({email: email}, function(err, user) 
+  {
+    if (err)
+	{
+		response.status(500).send({error: "Something went wrong. Error: "+err});
+	} 
+
+    if (!user) // No user already exists for that email
+	{
+      	// create a sample user
+		var user = new User({ 
+		email: email, 
+		password: password,
+		name: fullName,
+		admin: false 
+  });
+
+  // save the sample user
+  user.save(function(err) 
+  {
+    if (err) throw err;
+    console.log('User saved successfully');
+    response.json({ success: true, message: 'An account was created. Login to see your token' });
+  });
+    } 
+	else if (user) // A User with email already exists
+	{
+		response.json({ success:false, message: 'A user with that email already exists. try logging in.' });
+	}
+
+  });
+	
+
+
+});
+
+
+
 // Authentication
 router.post('/api/v1/authenticate', function(request, response)
 {
