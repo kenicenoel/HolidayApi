@@ -16,6 +16,8 @@ var db = mongoose.connect(config.database);
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) 
 {
+	res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   console.log('Time: ', Date.now());
   next();
 });
@@ -137,7 +139,8 @@ router.post('/api/v1/authenticate', function(request, response)
 	// route middleware to verify a token
 router.use(function(request, response, next) 
 {
-
+	 response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   // check header or url parameters or post parameters for token
   var token = request.body.token || request.query.token || request.headers['x-access-token'];
 
