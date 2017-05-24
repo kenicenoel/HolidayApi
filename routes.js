@@ -165,7 +165,7 @@ router.use(function(request, response, next)
 
     // if there is no token
     // return an error
-    return res.status(403).send({ 
+    return response.status(403).send({ 
         success: false, 
         message: 'No token provided.' 
     });
