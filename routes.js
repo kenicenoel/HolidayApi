@@ -22,7 +22,6 @@ router.use(function timeLog(req, res, next)
 
 
 
-
 // handle Get requests from clients
 router.get('/', function (request, response) 
 {
@@ -218,8 +217,9 @@ router.post('/api/v1/holiday', function (request, response)
 /* ************************** PUT ****************************/
 
 // Handle update requests from the client for the id specified after the / in the url. 
-router.put('/api/v1/holiday/:holidayId', function (request, response) {
-	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
+router.put('/holiday/:id', function (request, response) 
+{
+	var holidayId = request.params.id; // grab the specified id from the url (:/id)
 	var newName = request.body.name;
 	var newDate = request.body.date;
 	var newCountry = request.body.country;
@@ -273,9 +273,10 @@ router.put('/api/v1/holiday/:holidayId', function (request, response) {
 /**********************  DELETE *****************/
 
 // Handle delete requests from the client for the id specified after the / in the url. 
-router.delete('/api/v1/holiday/:holidayId', function (request, response) 
+
+router.delete('/holiday/:id', function (request, response) 
 {
-	var holidayId = request.params.id; // grab the specified id from the url (:/holidayId)
+	var holidayId = request.params.id; // grab the specified id from the url (/:id)
 	Holiday.findByIdAndRemove(holidayId, function (err, holiday) 
 	{  
 		// We'll create a simple object to send back with a message and the id of the document that was removed
