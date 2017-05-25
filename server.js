@@ -9,15 +9,6 @@ var config = require('./config'); // get our config file
 
 var app = express();
 
-
-app.use(cors());
-app.use(function(request, response, next) 
-{
-  response.header("Access-Control-Allow-Origin", "*");
-  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('superSecret', config.secret); // secret variable
@@ -33,6 +24,13 @@ var db = mongoose.connect(config.database);
 
 // get an instance of the router for api routes
 var apiRoutes = express.Router();
+
+apiRoutes.use(function(request, response, next) 
+{
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 
 // handle Get requests from clients
