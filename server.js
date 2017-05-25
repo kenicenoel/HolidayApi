@@ -111,34 +111,34 @@ apiRoutes.post('/setup', function(request, response)
     if (!user) // No user already exists for that email
 	{
       	// create a sample user
-		var user = new User({ 
+		var user = new User
+		({ 
 		email: email, 
 		password: password,
 		name: fullName,
 		admin: false 
-  });
+		});
 
-  // save the sample user
-  user.save(function(err) 
-  {
-     if (err)
-	{
-		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
-	} 
-    console.log('User saved successfully');
-	  var token = jwt.sign(user, app.get('superSecret'), 
+		// save the  user
+		user.save(function(err) 
 		{
-          expiresInMinutes: 28800  // expires in 20 days
-        });
+			if (err)
+			{
+				response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
+			} 
+			console.log('User saved successfully');		
+		
+		});
 
-    
-    response.send
-	({ 
-		success: true, 
-		message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days',
-		token: token
-	 });
-  });
+		// generate new token
+		var token = jwt.sign(user, app.get('superSecret'), {expiresInMinutes: 28800  /* expires in 20 days */ });
+
+			response.send
+			({ 
+				success: true, 
+				message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days',
+				token: token
+			});
     } 
 	else if (user) // A User with email already exists
 	{
