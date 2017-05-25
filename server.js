@@ -15,7 +15,7 @@ var apiRoutes = express.Router();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.set('superSecret', config.secret); // secret variable
-var port = process.env.PORT || 3000; // used to create, sign, and verify tokens
+var port = process.env.PORT || 5000; // used to create, sign, and verify tokens
 
 
 // Use the models which are blueprints for the Database document objects
@@ -93,7 +93,7 @@ apiRoutes.get('/holiday/:country', function (request, response)
 
 
 // Create a user
-apiRoutes.post('/setup', function(request, response)
+apiRoutes.post('/setup', function(request, response, next)
 {
 	var email = request.body.email;
 	var password = request.body.password;
@@ -108,40 +108,38 @@ apiRoutes.post('/setup', function(request, response)
 		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 	} 
 
-    if (!user) // No user already exists for that email so create account
+    if (!user) // No user already exists for that email
 	{
-      	// create a user
-		var user = new User
-		({ 
+      	// create a sample user
+		var user = new User({ 
 		email: email, 
 		password: password,
 		name: fullName,
 		admin: false 
-		});
+  });
 
-		// save the  user
-		user.save(function(err) 
-		{
-			if (err){response.status(500).send({success: false, message: "Something went wrong. Error: "+err});} 
-			console.log('User '+ fullName+ ' was created successfully');		
-		});
-
-		// generate new token
-		var token = jwt.sign(user, app.get('superSecret'), {expiresInMinutes: 28800  /* expires in 20 days */ });
-
-		// send the token info to client
-		response.send
-		({
-			success: true, 
-			message: "Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days",
-			token: token
-		});
-    } 
-
-	// A User with email already exists with that email address
-	else if (user) 
+  // save the sample user
+  user.save(function(err) 
+  {
+     if (err)
 	{
-		response.send({ success:false, message: 'A user with that email already exists.' });
+		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
+	} 
+    console.log('User saved successfully');
+	  var token = jwt.sign(user, app.get('superSecret'));
+
+    
+    response.send
+	({ 
+		success: true, 
+		message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again.',
+		token: token
+	 });
+  });
+    } 
+	else if (user) // A User with email already exists
+	{
+		response.send({ success:false, message: 'A user with that email already exists. try logging in.' });
 	}
 
   });
