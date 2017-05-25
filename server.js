@@ -365,7 +365,6 @@ apiRoutes.delete('/holiday/:id', function (request, response)
 });
 
 
-
 // apply the routes to our application with the prefix /api/v1
 app.use('/api/v1', apiRoutes);
 
