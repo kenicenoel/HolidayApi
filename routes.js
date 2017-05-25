@@ -99,7 +99,7 @@ router.post('/api/v1/setup', function(request, response)
   {
     if (err)
 	{
-		response.status(500).send({error: "Something went wrong. Error: "+err});
+		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 	} 
 
     if (!user) // No user already exists for that email
@@ -115,14 +115,28 @@ router.post('/api/v1/setup', function(request, response)
   // save the sample user
   user.save(function(err) 
   {
-    if (err) throw err;
+     if (err)
+	{
+		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
+	} 
     console.log('User saved successfully');
-    response.json({ success: true, message: 'An account was created. Login to see your token' });
+	  var token = jwt.sign(user, app.get('superSecret'), 
+		{
+          expiresInMinutes: 28800  // expires in 20 days
+        });
+
+    
+    response.send
+	({ 
+		success: true, 
+		message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days',
+		token: token
+	 });
   });
     } 
 	else if (user) // A User with email already exists
 	{
-		response.json({ success:false, message: 'A user with that email already exists. try logging in.' });
+		response.send({ success:false, message: 'A user with that email already exists. try logging in.' });
 	}
 
   });
@@ -163,7 +177,7 @@ router.post('/api/v1/authenticate', function(request, response)
         // create a token
         var token = jwt.sign(user, app.get('superSecret'), 
 		{
-          expiresInMinutes: 7200 // expires in 120 hours or 5 days
+          expiresInMinutes: 24  // expires in 120 hours or 5 days
         });
 
         // return the information including token as JSON
