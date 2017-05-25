@@ -31,7 +31,7 @@ apiRoutes.use(cors());
 
 
 // handle Get requests from clients
-apiRoutes.get('/', function (request, response, next) 
+apiRoutes.get('/', function (request, response) 
 {
 	response.send("Welcome to the Caribbean Holidays API.\nVersion: v1\nAccess: /api/v1/holiday/");
 });
@@ -39,7 +39,7 @@ apiRoutes.get('/', function (request, response, next)
 
 
 // A list of holidays for all countries
-apiRoutes.get('/holiday', function (request, response, next) 
+apiRoutes.get('/holiday', function (request, response) 
 {
 	Holiday.find({}, function(err, holidays)
 	{
@@ -63,7 +63,7 @@ apiRoutes.get('/holiday', function (request, response, next)
 });
 
 // A list of holidays for specific country
-apiRoutes.get('/holiday/:country', function (request, response, next) 
+apiRoutes.get('/holiday/:country', function (request, response) 
 {
 	var filterCountry = request.params.country;
 	Holiday.find({'country': filterCountry}, function(err, holidays)
@@ -93,7 +93,7 @@ apiRoutes.get('/holiday/:country', function (request, response, next)
 
 
 // Create a user
-apiRoutes.post('/setup', function(request, response, next)
+apiRoutes.post('/setup', function(request, response)
 {
 	var email = request.body.email;
 	var password = request.body.password;
@@ -154,7 +154,7 @@ apiRoutes.post('/setup', function(request, response, next)
 
 
 // Authentication
-apiRoutes.post('/authenticate', function(request, response, next)
+apiRoutes.post('/authenticate', function(request, response)
 {
 	// find the user
   User.findOne
@@ -250,7 +250,7 @@ apiRoutes.use(function(request, response, next)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-apiRoutes.post('/holiday', function (request, response, next) 
+apiRoutes.post('/holiday', function (request, response) 
 {
 	
 
@@ -287,7 +287,7 @@ apiRoutes.post('/holiday', function (request, response, next)
 /* ************************** PUT ****************************/
 
 // Handle update requests from the client for the id specified after the / in the url. 
-apiRoutes.put('/holiday/:id', function (request, response, next) 
+apiRoutes.put('/holiday/:id', function (request, response) 
 {
 	var holidayId = request.params.id; // grab the specified id from the url (:/id)
 	var newName = request.body.name;
@@ -344,7 +344,7 @@ apiRoutes.put('/holiday/:id', function (request, response, next)
 
 // Handle delete requests from the client for the id specified after the / in the url. 
 
-apiRoutes.delete('/holiday/:id', function (request, response, next) 
+apiRoutes.delete('/holiday/:id', function (request, response) 
 {
 	var holidayId = request.params.id; // grab the specified id from the url (/:id)
 	Holiday.findByIdAndRemove(holidayId, function (err, holiday) 
@@ -366,7 +366,7 @@ apiRoutes.delete('/holiday/:id', function (request, response, next)
 
 
 
-// apply the routes to our application with the prefix /api
+// apply the routes to our application with the prefix /api/v1
 app.use('/api/v1', apiRoutes);
 
 
