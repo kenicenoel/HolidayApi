@@ -108,9 +108,9 @@ apiRoutes.post('/setup', function(request, response)
 		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 	} 
 
-    if (!user) // No user already exists for that email
+    if (!user) // No user already exists for that email so create account
 	{
-      	// create a sample user
+      	// create a user
 		var user = new User
 		({ 
 		email: email, 
@@ -122,27 +122,26 @@ apiRoutes.post('/setup', function(request, response)
 		// save the  user
 		user.save(function(err) 
 		{
-			if (err)
-			{
-				response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
-			} 
-			console.log('User saved successfully');		
-		
+			if (err){response.status(500).send({success: false, message: "Something went wrong. Error: "+err});} 
+			console.log('User '+ fullName+ ' was created successfully');		
 		});
 
 		// generate new token
 		var token = jwt.sign(user, app.get('superSecret'), {expiresInMinutes: 28800  /* expires in 20 days */ });
 
-			response.send
-			({ 
-				success: true, 
-				message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days',
-				token: token
-			});
+		// send the token info to client
+		response.send
+		({
+			success: true, 
+			message: "Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days",
+			token: token
+		});
     } 
-	else if (user) // A User with email already exists
+
+	// A User with email already exists with that email address
+	else if (user) 
 	{
-		response.send({ success:false, message: 'A user with that email already exists. try logging in.' });
+		response.send({ success:false, message: 'A user with that email already exists.' });
 	}
 
   });
@@ -187,7 +186,8 @@ apiRoutes.post('/authenticate', function(request, response)
         });
 
         // return the information including token as JSON
-        response.send({
+        response.send
+		({
           success: true,
           message: 'Enjoy your token!',
           token: token
