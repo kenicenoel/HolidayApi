@@ -14,18 +14,17 @@ var db = mongoose.connect(config.database);
 
 
 //Middle ware that is specific to this router
-// router.use(function timeLog(req, res, next) 
-// {
-// 	res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   console.log('Time: ', Date.now());
-//   next();
-// });
+router.use(function(request, response, next) 
+{
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 
 
 // handle Get requests from clients
-router.get('/', function (request, response) 
+router.get('/', function (request, response, next) 
 {
 	response.send("Welcome to the Caribbean Holidays API.\nVersion: v1\nAccess: /api/v1/holiday/");
 });
@@ -33,7 +32,7 @@ router.get('/', function (request, response)
 
 
 // A list of holidays for all countries
-router.get('/api/v1/holiday', function (request, response) 
+router.get('/api/v1/holiday', function (request, response, next) 
 {
 	Holiday.find({}, function(err, holidays)
 	{
@@ -57,7 +56,7 @@ router.get('/api/v1/holiday', function (request, response)
 });
 
 // A list of holidays for specific country
-router.get('/api/v1/holiday/:country', function (request, response) 
+router.get('/api/v1/holiday/:country', function (request, response, next) 
 {
 	var filterCountry = request.params.country;
 	Holiday.find({'country': filterCountry}, function(err, holidays)
@@ -87,7 +86,7 @@ router.get('/api/v1/holiday/:country', function (request, response)
 
 
 // Create a user
-router.post('/api/v1/setup', function(request, response)
+router.post('/api/v1/setup', function(request, response, next)
 {
 	var email = request.body.email;
 	var password = request.body.password;
@@ -148,7 +147,7 @@ router.post('/api/v1/setup', function(request, response)
 
 
 // Authentication
-router.post('/api/v1/authenticate', function(request, response)
+router.post('/api/v1/authenticate', function(request, response, next)
 {
 	// find the user
   User.findOne
@@ -201,8 +200,7 @@ router.post('/api/v1/authenticate', function(request, response)
 	// route middleware to verify a token
 router.use(function(request, response, next) 
 {
-// 	 response.header("Access-Control-Allow-Origin", "*");
-//   response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
   // check header or url parameters or post parameters for token
   var token = request.body.token || request.query.token || request.headers['x-access-token'];
 
@@ -245,7 +243,7 @@ router.use(function(request, response, next)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-router.post('/api/v1/holiday', function (request, response) 
+router.post('/api/v1/holiday', function (request, response, next) 
 {
 	
 
@@ -282,7 +280,7 @@ router.post('/api/v1/holiday', function (request, response)
 /* ************************** PUT ****************************/
 
 // Handle update requests from the client for the id specified after the / in the url. 
-router.put('/holiday/:id', function (request, response) 
+router.put('/holiday/:id', function (request, response, next) 
 {
 	var holidayId = request.params.id; // grab the specified id from the url (:/id)
 	var newName = request.body.name;
@@ -339,7 +337,7 @@ router.put('/holiday/:id', function (request, response)
 
 // Handle delete requests from the client for the id specified after the / in the url. 
 
-router.delete('/holiday/:id', function (request, response) 
+router.delete('/holiday/:id', function (request, response, next) 
 {
 	var holidayId = request.params.id; // grab the specified id from the url (/:id)
 	Holiday.findByIdAndRemove(holidayId, function (err, holiday) 
