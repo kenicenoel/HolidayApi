@@ -8,6 +8,24 @@ var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 
 var app = express();
+// get an instance of the router for api routes
+var apiRoutes = express.Router();
+app.use(cors());
+apiRoutes.use(cors());
+
+app.use(function(request, response, next) 
+{
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+apiRoutes.use(function(request, response, next) 
+{
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -22,15 +40,7 @@ var User   = require('./models/user'); // get our mongoose model
 // connect to the Mongo database using mongoose
 var db = mongoose.connect(config.database);
 
-// get an instance of the router for api routes
-var apiRoutes = express.Router();
 
-apiRoutes.use(function(request, response, next) 
-{
-  response.header("Access-Control-Allow-Origin", "*");
-  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 
 // handle Get requests from clients
