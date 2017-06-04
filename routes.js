@@ -39,12 +39,12 @@ router.get('/api/v1/holiday', function (request, response)
 	{
 		if(err)
 		{
-			response.status(500).send({error: "Something went wrong. Error: "+err});
+			response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 		}
 
 		else if(holidays.length == 0)
 		{
-			response.send("There aren't any holidays available.");
+			response.send({success: false, message:"There aren't any holidays available."});
 		}
 		else
 		{
@@ -64,12 +64,12 @@ router.get('/api/v1/holiday/:country', function (request, response)
 	{
 		if(err)
 		{
-			response.status(500).send({error: "Something went wrong. Error: "+err});
+			response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 		}
 
 		else if(holidays.length == 0)
 		{
-			response.send("There aren't any holidays available for the specified country.");
+			response.send({success:false, message:"There aren't any holidays available for the specified country."});
 		}
 		else
 		{
@@ -156,7 +156,7 @@ router.post('/api/v1/authenticate', function(request, response)
   {
     if (err)
 	{
-		response.status(500).send({error: "Something went wrong. Error: "+err});
+		response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 	} 
 
     if (!user) 
@@ -252,7 +252,7 @@ router.post('/api/v1/holiday', function (request, response)
 	// Check if it is empty or missing required data fields
 	if (!request.body.name || !request.body.country || !request.body.date || request.body.name == "" || request.body.country == "" || request.body.date == "") {
 		response.status(500).send({
-			error: "To submit a holiday, you must supply the country, date and name. "
+			success: false, message: "To submit a holiday, you must supply the country, date and name. "
 		});
 	} 
 	else 
@@ -265,7 +265,7 @@ router.post('/api/v1/holiday', function (request, response)
 		{
 			if(err)
 			{
-				response.status(500).send({error: "Something went wrong and the holiday could not be saved. Error: "+err});
+				response.status(500).send({success: false, message: "Something went wrong and the holiday could not be saved. Error: "+err});
 			}
 			else
 			{
@@ -294,7 +294,7 @@ router.put('/holiday/:id', function (request, response)
 	if ((!newName || newName == "") || (!newDate || newDate == "") || (!newCountry || newCountry == "")) 
 	{
 		response.status(500).send({
-			error: "You must specify a valid name, date and country for the update to work"
+			success: false, message: "You must specify a valid name, date and country for the update to work"
 		});
 	}
 	else 
@@ -303,7 +303,7 @@ router.put('/holiday/:id', function (request, response)
 		{
 			if(err)
 			{
-				response.status(500).send({error: "Something went wrong. Error: "+err});
+				response.status(500).send({success:false, message: "Something went wrong. Error: "+err});
 			}
 
 			else
@@ -316,7 +316,7 @@ router.put('/holiday/:id', function (request, response)
 				{
 					if(err)
 					{
-						response.status(500).send({error: "Something went wrong. Error: "+err});
+						response.status(500).send({success: false, message: "Something went wrong. Error: "+err});
 					}
 
 					else
@@ -348,6 +348,7 @@ router.delete('/holiday/:id', function (request, response)
 		// You can really do this however you want, though.
     	var success = 
 		{
+			success: true,
         	message: "Holiday successfully deleted",
         	id: holiday._id
     	};
