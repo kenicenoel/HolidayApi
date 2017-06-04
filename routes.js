@@ -27,7 +27,7 @@ router.use(function timeLog(req, res, next)
 // handle Get requests from clients
 router.get('/', function (request, response) 
 {
-	response.send("Welcome to the Caribbean Holidays API.\nVersion: v1\nAccess: /api/v1/holiday/");
+	response.json("Welcome to the Caribbean Holidays API.\nVersion: v1\nAccess: /api/v1/holiday/");
 });
 
 
@@ -44,11 +44,11 @@ router.get('/api/v1/holiday', function (request, response)
 
 		else if(holidays.length == 0)
 		{
-			response.send({success: false, message:"There aren't any holidays available."});
+			response.json({success: false, message:"There aren't any holidays available."});
 		}
 		else
 		{
-			response.send(holidays);
+			response.json(holidays);
 		}
 		
 
@@ -69,11 +69,11 @@ router.get('/api/v1/holiday/:country', function (request, response)
 
 		else if(holidays.length == 0)
 		{
-			response.send({success:false, message:"We could not find any holidays for the specified country."});
+			response.json({success:false, message:"We could not find any holidays for the specified country."});
 		}
 		else
 		{
-			response.send(holidays);
+			response.json(holidays);
 		}
 		
 
@@ -126,7 +126,7 @@ router.post('/api/v1/setup', function(request, response)
         });
 
     
-    response.send
+    response.json
 	({ 
 		success: true, 
 		message: 'Your account was created and your token is displayed below. Please write down this token as it won\'t be displayed again. Tokens expire after 20 days',
@@ -136,7 +136,7 @@ router.post('/api/v1/setup', function(request, response)
     } 
 	else if (user) // A User with email already exists
 	{
-		response.send({ success:false, message: 'A user with that email already exists. try logging in.' });
+		response.json({ success:false, message: 'A user with that email already exists. try logging in.' });
 	}
 
   });
@@ -161,14 +161,14 @@ router.post('/api/v1/authenticate', function(request, response)
 
     if (!user) 
 	{
-      response.send({ success: false, message: 'Authentication failed. User not found.' });
+      response.json({ success: false, message: 'Authentication failed. User not found.' });
     } 
 	else if (user) 
 	{
       // check if password matches
       if (user.password != request.body.password) 
 	  {
-        response.send({ success: false, message: 'Authentication failed. Wrong password.' });
+        response.json({ success: false, message: 'Authentication failed. Wrong password.' });
       } 
 	  else 
 	  {
@@ -181,7 +181,7 @@ router.post('/api/v1/authenticate', function(request, response)
         });
 
         // return the information including token as JSON
-        response.send({
+        response.json({
           success: true,
           message: 'Enjoy your token!',
           token: token
@@ -352,7 +352,7 @@ router.delete('/holiday/:id', function (request, response)
         	message: "Holiday successfully deleted",
         	id: holiday._id
     	};
-    response.send(success);
+    response.json(success);
 });
 
 	
