@@ -69,7 +69,7 @@ router.get('/api/v1/holiday/:country', function (request, response)
 
 		else if(holidays.length == 0)
 		{
-			response.send({success:false, message:"There aren't any holidays available for the specified country."});
+			response.send({success:false, message:"We could not find any holidays for the specified country."});
 		}
 		else
 		{
